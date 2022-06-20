@@ -3,7 +3,7 @@ This is the source code for manucript Nguyen, T.M., Jeevan, J.J., Xu, N. and Che
 
 The same copy of the source code and data can be found at https://figshare.com/projects/Polar_Gini_Curve/76749. A more detailed PGC tutorial could be founded at https://nguyenminhthanh060.wixsite.com/polarginicurve. 
 
-1. Dataset
+## 1. Dataset
 
 This tutorial uses the neonatal mouse heart single cell dataset from http://bis.zju.edu.cn/MCA/. The processed dataset is at https://figshare.com/articles/dataset/Supplemental_Data_3_-_Neonatal_Heart_Simulation/11933520. This tutorial uses Matlab verison > 2017.
 
@@ -21,7 +21,7 @@ clusterID = importdata('ClusterID.mat'); % cluster ID
 
 numCluster = max(clusterID); % get the number of clusters
 
-2. Identify cluster
+## 2. Identify cluster
 
 This step could be customized according to each project. Step 1 already contains the spatial and clustering information. To reproduce the result, run
 
@@ -61,7 +61,7 @@ colorbar;
 colormap('jet');
 title(marker)
 
-3. Draw a PGC
+## 3. Draw a PGC
 
 Here we draw PGC for gene Actc1 on cluster 1.
 
@@ -90,7 +90,7 @@ Actc1 expression over all cells.
 
 PGC for Actc1 in cluster 1
 
-4. Compute p-value
+## 4. Compute p-value
 
 There are multiple ways to compute p-value for PGC. Here we show the standard way, presented in the original publication. This may need long computational time.
 
