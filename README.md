@@ -1,12 +1,35 @@
 # Polar-Gini-Curve (PGC)
-This is the source code for manucript Nguyen, T.M., Jeevan, J.J., Xu, N. and Chen, J.Y., 2021. Polar Gini Curve: a technique to discover gene expression spatial patterns from single-cell RNA-seq data. Genomics, Proteomics &amp; Bioinformatics, 19(3), pp.493-503.
 
-The same copy of the source code and data can be found at https://figshare.com/projects/Polar_Gini_Curve/76749. A more detailed PGC tutorial could be founded at https://nguyenminhthanh060.wixsite.com/polarginicurve. 
 
-## 1. Dataset
+## About
+
+In this work, we design the Polar Gini Curve (PGC) technique, which combines the gene expression and the 2D embedded visual information to detect biomarkers from single-cell data. Theoretically, a Polar Gini Curve characterizes the shape and ‘evenness’ of cell-point distribution of cell-point set. To quantify whether a gene could be a marker in a cell cluster, we can combine two Polar Gini Curves: one drawn upon the cell-points expressing the gene, and the other drawn upon all cell-points in the cluster. We hypothesize that the closers these two curves are, the more likely the gene would be cluster markers. We demonstrate the framework in several simulation case-studies. Applying our framework in analyzing neonatal mouse heart single-cell data, the detected biomarkers may characterize novel subtypes of cardiac muscle cells.
+
+**Main idea:** A representation combining _spatial information_ and _gene expression_ from single-cell data.
+
+       Spatial information includes:
+
+              Density: how a cell are placed next to each other in the spatial space (i.e. projected 2D coordinate, 2D tissue image).
+
+              Shape: how the cell cluster looks (boundary) in the spatial space.
+
+       Gene expression: is used to select an interested subset of interested from the cell cluster
+
+
+**Key techniques:**
+
+        Capturing shape information: project the cell-points onto each angles, from 0, 0.1, 0.2, ... 360 degrees (smaller resolution is better)
+
+        In each angle, compute the Gini index for the projected cell-points.
+
+Cluster specific biomarkers: by comparing PGC of the whole cluster cell-points and PGC of the cell-points expressing a specific gene.
+
+## Tutorial
+### 1. Dataset
 
 This tutorial uses the neonatal mouse heart single cell dataset from http://bis.zju.edu.cn/MCA/. The processed dataset is at https://figshare.com/articles/dataset/Supplemental_Data_3_-_Neonatal_Heart_Simulation/11933520. This tutorial uses Matlab verison > 2017.
 
+```
 %% load the dataset
 
 coordinate = importdata('coordinate.mat'); %2D spatial coordinate
@@ -20,11 +43,13 @@ clusterID = importdata('ClusterID.mat'); % cluster ID
  
 
 numCluster = max(clusterID); % get the number of clusters
+```
 
-## 2. Identify cluster
+### 2. Identify cluster
 
 This step could be customized according to each project. Step 1 already contains the spatial and clustering information. To reproduce the result, run
 
+```
 %% This step is optional, to reproduce the clustering and spatial
 
 coordinate = tsne(Expression); %compute the spatial coordinate
@@ -37,15 +62,15 @@ title('k-distance graph');
 xlabel('Points sorted with 50th nearest distances');
 ylabel('50th nearest distances');
 
-​
 
 clusterID = dbscan(coordinate,3,50);; % cluster ID
+```
 
-Cluster 1 are cardiomyocytes. Actc1 is a very well-known marker for this cell type (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6249224/). To verify
+Cluster 1 are cardiomyocytes. Actc1 is a very well-known marker for this cell type (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6249224/). To verify:
 
+```
 gscatter(coordinate(:, 1), coordinate(:, 2), clusterID); % view all clusters
 
-​
 
 % plot Actc1 expression
 marker = 'Actc1';
@@ -60,11 +85,12 @@ scatter(coordinate(index1, 1), coordinate(index1, 2), 15, markerExpression(index
 colorbar;
 colormap('jet');
 title(marker)
+```
 
-## 3. Draw a PGC
+### 3. Draw a PGC
 
 Here we draw PGC for gene Actc1 on cluster 1.
-
+```
 clusterIndex = find(clusterID == 1); % get all cells in cluster 1
 clusterCoor = coordinate(clusterIndex, :); % get the spatial coordinate of cells in cluster 1
 clusterLbl = ones(length(clusterIndex), 1); % label these cells as '1'
@@ -78,22 +104,14 @@ geneLbl = 2*ones(length(geneIndex), 1); % label these cells as '2'
 [angleList, allGini] = make2DGini([geneCoor; clusterCoor],...
     [geneLbl; clusterLbl], {'Actc1 cluster 1 cells', 'All cluster 1 cells'});
 
-​
 
 RMSD = sqrt( mean( abs( allGini{1} - allGini{2} ).^2 ) );; % the RMSD between two PGCs. It is 0.0112 for this case
-
-Choosing 'epsilon' parameter = 3 for the dbscan algorithm. See https://www.mathworks.com/help/stats/dbscan-clustering.html
-
-Visualize all cell clusters. Cluster 1 (orange) is on the bottom left.
-
-Actc1 expression over all cells.
-
-PGC for Actc1 in cluster 1
-
-## 4. Compute p-value
+```
+### 4. Compute p-value
 
 There are multiple ways to compute p-value for PGC. Here we show the standard way, presented in the original publication. This may need long computational time.
 
+```
 pointIdx = find( clusterID == 1 );
 clusterPt = coordinate(pointIdx, :);
 
@@ -134,3 +152,8 @@ end
 
 hist(allRanRMSD, 100); % this shows where the real RMSD (in this case, 0.0112) is, compared to the simulated RMSD
 pVal =  1 - normcdf(RMSD, mean(allRanRMSD), std(allRanRMSD)) % p-value in this case, 4.8137e-12
+```
+
+## How to cite us
+
+Nguyen, T.M., Jeevan, J.J., Xu, N. and Chen, J.Y., **Polar Gini Curve: a technique to discover gene expression spatial patterns from single-cell RNA-seq data,** _Genomics, Proteomics & Bioinformatics_, 4, 19(3), pp.493-503., <span class="fs-3">[doi](https://doi.org/10.1101/2020.03.04.977140){:target="_blank"}</span>
