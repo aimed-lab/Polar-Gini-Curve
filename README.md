@@ -1,29 +1,6 @@
 # Polar-Gini-Curve (PGC)
 
 
-## About
-
-In this work, we design the Polar Gini Curve (PGC) technique, which combines the gene expression and the 2D embedded visual information to detect biomarkers from single-cell data. Theoretically, a Polar Gini Curve characterizes the shape and ‘evenness’ of cell-point distribution of cell-point set. To quantify whether a gene could be a marker in a cell cluster, we can combine two Polar Gini Curves: one drawn upon the cell-points expressing the gene, and the other drawn upon all cell-points in the cluster. We hypothesize that the closers these two curves are, the more likely the gene would be cluster markers. We demonstrate the framework in several simulation case-studies. Applying our framework in analyzing neonatal mouse heart single-cell data, the detected biomarkers may characterize novel subtypes of cardiac muscle cells.
-
-**Main idea:** A representation combining _spatial information_ and _gene expression_ from single-cell data.
-
-       Spatial information includes:
-
-              Density: how a cell are placed next to each other in the spatial space (i.e. projected 2D coordinate, 2D tissue image).
-
-              Shape: how the cell cluster looks (boundary) in the spatial space.
-
-       Gene expression: is used to select an interested subset of interested from the cell cluster
-
-
-**Key techniques:**
-
-        Capturing shape information: project the cell-points onto each angles, from 0, 0.1, 0.2, ... 360 degrees (smaller resolution is better)
-
-        In each angle, compute the Gini index for the projected cell-points.
-
-Cluster specific biomarkers: by comparing PGC of the whole cluster cell-points and PGC of the cell-points expressing a specific gene.
-
 ## Tutorial
 ### 1. Dataset
 
