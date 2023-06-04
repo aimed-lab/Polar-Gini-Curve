@@ -19,7 +19,7 @@ def identify_clusters(expression):
     expression (numpy array): The gene expression data.
 
     Returns:
-    clusterID (numpy array): The ID for each cluster computed using DBSCAN.
+    cluster_id (numpy array): The ID for each cluster computed using DBSCAN.
     coordinate (numpy array): The 2D spatial coordinates computed using t-SNE.
 
     Note:
@@ -47,3 +47,56 @@ def identify_clusters(expression):
     cluster_id = DBSCAN(eps=3, min_samples=50).fit_predict(coordinate)
 
     return cluster_id, coordinate
+
+
+def plot_clusters_and_expression(
+    coordinate, cluster_id, expression, gene_list, marker="Actc1", threshold=1
+):
+    """
+    This function plots the clusters and gene expression for a given marker gene.
+
+    Parameters:
+    coordinate (numpy array): The 2D spatial coordinates.
+    cluster_id (numpy array): The ID for each cluster.
+    expression (numpy array): The gene expression data.
+    gene_list (numpy array): The list of gene symbols.
+    marker (str, optional): The marker gene to be plotted. Default is 'Actc1'.
+    threshold (float, optional): Distinguishing high/low expression of the marker gene.
+                                 Default is 1.
+
+    Returns:
+    None. The function produces two plots.
+    """
+
+    # Plot clusters
+    plt.scatter(coordinate[:, 0], coordinate[:, 1], c=cluster_id)  # view all clusters
+    plt.show()
+
+    # Plot marker gene expression
+    index = np.where(gene_list == marker)[0][0]
+    marker_expression = expression[:, index].squeeze()
+
+    # Plot points with low marker gene expression
+    index1 = np.where((marker_expression <= threshold) & (cluster_id > 0))
+    plt.scatter(
+        coordinate[np.array(index1), 0],
+        coordinate[np.array(index1), 1],
+        s=15,
+        c=np.array([192, 192, 192]) / 255,
+        marker=".",
+    )
+
+    # Plot points with high marker gene expression
+    index1 = np.where((marker_expression > threshold) & (cluster_id > 0))
+    plt.scatter(
+        coordinate[np.array(index1), 0],
+        coordinate[np.array(index1), 1],
+        s=15,
+        c=marker_expression[np.array(index1)],
+        marker=".",
+    )
+
+    plt.colorbar()
+    plt.set_cmap("jet")
+    plt.title(marker)
+    plt.show()
