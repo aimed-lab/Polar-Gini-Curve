@@ -10,7 +10,10 @@ pandas
 Pillow
 pyparsing
 python-dateutil
+pytz
 scikit-learn
 scipy
+shapely
 six
 threadpoolctl
+tzdata
