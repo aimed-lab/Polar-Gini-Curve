@@ -122,9 +122,9 @@ def compute_rmsd(coordinate, cluster_id, expression, gene_list, marker="Actc1"):
 
     marker_index = np.where(gene_list == marker)[0]
     marker_expression = expression[:, marker_index]
-    gene_index = np.where(
-        (cluster_id == 1) & (marker_expression > 0)
-    )  # find cells expressing marker in cluster 1
+    gene_index = np.where((cluster_id == 1) & (marker_expression > 0))[
+        0
+    ]  # find cells expressing marker in cluster 1
 
     gene_coor = coordinate[
         gene_index, :
@@ -132,7 +132,6 @@ def compute_rmsd(coordinate, cluster_id, expression, gene_list, marker="Actc1"):
     gene_lbl = 2 * np.ones(len(gene_index))  # label these cells as '2'
 
     # Draw the PGCs for these two sets of cells
-    # TODO: Debug this function, as it raises a ValueError with different dimensions
     _, all_gini = make2DGini(
         np.vstack((gene_coor, cluster_coor)),
         np.hstack((gene_lbl, cluster_lbl)),
