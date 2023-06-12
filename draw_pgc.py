@@ -1,12 +1,27 @@
-import numpy as np
+"""
+Calculate the Gini coefficient and plot the Lorenz curve.
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.spatial import ConvexHull
 
 
-def computeGini(pop, val, makeplot=False):
-    assert len(pop) == len(val), "computeGini expects two equally long vectors."
+def compute_gini(pop, val, makeplot=False):
+    """
+    Compute the Gini coefficient and plot the Lorenz curve.
+
+    Parameters:
+    pop (array-like): Population vector.
+    val (array-like): Value vector.
+    makeplot (bool, optional): Whether to plot the Lorenz curve. Default is False.
+
+    Returns:
+    g (float): Gini coefficient.
+    l (ndarray): Lorenz curve.
+    a (ndarray): Coordinate points of the Lorenz curve.
+    """
+
+    assert len(pop) == len(val), "compute_gini expects two equally long vectors."
 
     pop = np.append(0, pop)  # pre-append a zero
     val = np.append(0, val)  # pre-append a zero
@@ -21,7 +36,7 @@ def computeGini(pop, val, makeplot=False):
 
     assert np.all(pop >= 0) and np.all(
         val >= 0
-    ), "computeGini expects nonnegative vectors."
+    ), "compute_gini expects nonnegative vectors."
 
     # process input
     z = val * pop
@@ -56,7 +71,20 @@ def computeGini(pop, val, makeplot=False):
     return g, l, a
 
 
-def make2DGini(x, cluster_id, cluster_name=None):
+def make_2d_gini(x, cluster_id, cluster_name=None):
+    """
+    Compute the Gini coefficient for 2D data points in different clusters.
+
+    Parameters:
+    x (ndarray): 2D data points.
+    cluster_id (ndarray): Cluster ID for each data point.
+    cluster_name (list, optional): Names of the clusters. Default is None.
+
+    Returns:
+    angle_list (ndarray): List of angles.
+    all_gini (list): List of Gini coefficients for each cluster.
+    """
+
     assert x.shape[1] == 2, "We need 2D data."
 
     num_cluster = len(np.unique(cluster_id))
@@ -80,21 +108,23 @@ def make2DGini(x, cluster_id, cluster_name=None):
             angle = angle_list[i]
             value = np.dot(coordinate, [np.cos(angle), np.sin(angle)])
             value -= np.min(value)
-            gini[i] = computeGini(np.ones(len(value)), value)[0]
+            gini[i] = compute_gini(np.ones(len(value)), value)[0]
 
         all_gini[cluster - 1] = gini
 
-        # polar plot
-        plt.polar(angle_list, gini)
-        plt.title("Gini Coefficients")
+        ## polar plot
+        # plt.polar(angle_list, gini)
+        # plt.title("Gini Coefficients")
 
-    plt.legend(cluster_name)
-    plt.show()
+    # plt.legend(cluster_name)
+    # plt.show()
 
     return angle_list, all_gini
 
 
-def compute_rmsd(coordinate, cluster_id, expression, gene_list, marker="Actc1"):
+def compute_rmsd(
+    coordinate, cluster_id, expression, gene_list, marker="Actc1", cluster=1
+):
     """
     This function computes the RMSD (Root Mean Square Deviation) between the Polar Gini Curves (PGC) of
     all cells in a cluster and cells in the same cluster expressing a given marker.
@@ -110,21 +140,21 @@ def compute_rmsd(coordinate, cluster_id, expression, gene_list, marker="Actc1"):
     RMSD (float): Between the PGCs of all cells in the cluster and markered cells in the cluster.
     """
 
-    cluster_index = np.where(cluster_id == 1)[0]  # get all cells in cluster 1
+    cluster_index = np.where(cluster_id == cluster)[0]  # get all cells in cluster
     cluster_coor = coordinate[
         cluster_index, :
-    ]  # get the spatial coordinate of cells in cluster 1
+    ]  # get the spatial coordinate of cells in cluster
     cluster_lbl = np.ones(len(cluster_index))  # label these cells as '1'
 
-    print(gene_list.shape)
-    print(cluster_id.shape)
-    print(expression.shape)
+    # print(gene_list.shape)
+    # print(cluster_id.shape)
+    # print(expression.shape)
 
     marker_index = np.where(gene_list == marker)[0]
     marker_expression = expression[:, marker_index]
-    gene_index = np.where((cluster_id == 1) & (marker_expression > 0))[
+    gene_index = np.where((cluster_id == cluster) & (marker_expression > 0))[
         0
-    ]  # find cells expressing marker in cluster 1
+    ]  # find cells expressing marker in cluster
 
     gene_coor = coordinate[
         gene_index, :
@@ -132,14 +162,17 @@ def compute_rmsd(coordinate, cluster_id, expression, gene_list, marker="Actc1"):
     gene_lbl = 2 * np.ones(len(gene_index))  # label these cells as '2'
 
     # Draw the PGCs for these two sets of cells
-    _, all_gini = make2DGini(
+    _, all_gini = make_2d_gini(
         np.vstack((gene_coor, cluster_coor)),
         np.hstack((gene_lbl, cluster_lbl)),
-        [f"{marker} cluster 1 cells", "All cluster 1 cells"],
+        [f"{marker} cluster {cluster} cells", "All cluster {cluster} cells"],
     )
 
-    RMSD = np.sqrt(
-        np.mean(np.abs(all_gini[0] - all_gini[1]) ** 2)
-    )  # the RMSD between two PGCs
+    try:
+        RMSD = np.sqrt(
+            np.mean(np.abs(all_gini[0] - all_gini[1]) ** 2)
+        )  # the RMSD between two PGCs
+    except:
+        RMSD = np.nan
 
     return RMSD
