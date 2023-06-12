@@ -160,4 +160,9 @@ cython_debug/
 #.idea/
 
 # Custom
+
+## Original code
 matlab/
+
+## Compiled data in CSV files
+*.csv
