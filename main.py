@@ -6,6 +6,7 @@ from load_dataset import load_dataset
 # from process_data import identify_clusters, plot_clusters_and_expression
 # from draw_pgc import compute_rmsd
 from get_all_rmsd import get_all_rmsd
+from odd_ratio_marker import odd_ratio_marker
 
 coordinate = load_dataset("data/coordinate.mat")  # 2D spatial coordinate
 Expression = load_dataset("data/Expression.mat")  # gene expression
@@ -23,4 +24,6 @@ clusterID = load_dataset("data/clusterID.mat")  # cluster ID
 
 # print(RSMD)
 
-get_all_rmsd(coordinate, clusterID, Expression, geneList, "data/all_RMSD.csv")
+odd_ratio_marker(clusterID, Expression, geneList)
+
+# get_all_rmsd(coordinate, clusterID, Expression, geneList, "data/all_RMSD.csv")
