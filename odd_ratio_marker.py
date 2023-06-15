@@ -1,9 +1,30 @@
+"""
+Calculates mean expression, percentage expression, p-value of 
+fisher's exact test, and odd ratios of a gene in a cell cluster.
+"""
+
 import csv
 import numpy as np
 from scipy.stats import fisher_exact
 
 
 def odd_ratio_marker(cluster_id, expression, gene_list):
+    """
+    Function to compute the mean expression, percentage expression, p-value of Fisher's exact test,
+    and odd ratios for a set of genes in a cell cluster.
+
+    Args:
+        cluster_id (numpy.array): An array containing the cluster IDs.
+        expression (numpy.array): A 2D array representing gene expression values.
+                                  Columns represent cells and rows represent genes.
+        gene_list (numpy.array): An array of gene symbols.
+
+    Returns:
+        None. The function writes the results into a
+        .csv file named 'Stat.csv' in the 'data' directory.
+
+    """
+
     expression = expression.T
 
     # mean expression and percentage expression
@@ -50,7 +71,9 @@ def odd_ratio_marker(cluster_id, expression, gene_list):
             )
 
     # save result into file Stat.csv into data directory
-    with open("data/Stat.csv", "w", newline="", encoding="utf-8") as csvfile:
+    with open(
+        "data/odd_ratio_marker.csv", "w", newline="", encoding="utf-8"
+    ) as csvfile:
         writer = csv.writer(csvfile)
         header = [
             "Gene",

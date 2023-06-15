@@ -7,7 +7,7 @@ import numpy as np
 from draw_pgc import compute_rmsd
 
 
-def get_all_rmsd(coordinate, cluster_id, expression, gene_list, output_file):
+def get_all_rmsd(coordinate, cluster_id, expression, gene_list):
     """
     Compute and save the RMSD values for each gene in each cluster.
 
@@ -25,7 +25,7 @@ def get_all_rmsd(coordinate, cluster_id, expression, gene_list, output_file):
     # Load the dataset
     num_cluster = int(np.max(cluster_id))
 
-    with open(output_file, "w", newline="", encoding="utf-8") as csvfile:
+    with open("data/all_rmsd.csv", "w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         header = ["Gene"]
 
