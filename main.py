@@ -10,11 +10,16 @@ from load_dataset import load_dataset
 # from get_all_rmsd import get_all_rmsd
 # from odd_ratio_marker import odd_ratio_marker
 from compute_pval import compute_pval
+from graphing import draw_tsne
 
 coordinate = load_dataset("data/coordinate.mat")  # 2D spatial coordinate
 Expression = load_dataset("data/Expression.mat")  # gene expression
 geneList = load_dataset("data/geneList.mat")  # gene symbol
 clusterID = load_dataset("data/clusterID.mat")  # cluster ID
+
+draw_tsne(
+    "Actc1", coordinate, clusterID, 2, Expression, geneList, random_state=0
+)
 
 # numCluster = np.max(clusterID)  # get the number of clusters
 # print(numCluster)
@@ -29,7 +34,7 @@ clusterID = load_dataset("data/clusterID.mat")  # cluster ID
 
 # odd_ratio_marker(clusterID, Expression, geneList)
 # get_all_rmsd(coordinate, clusterID, Expression, geneList)
-odd_ratio_marker = pd.read_csv("data/odd_ratio_marker.csv")
-all_rmsd = pd.read_csv("data/all_rmsd.csv")
+# odd_ratio_marker = pd.read_csv("data/odd_ratio_marker.csv")
+# all_rmsd = pd.read_csv("data/all_rmsd.csv")
 
-compute_pval(clusterID, geneList, odd_ratio_marker, all_rmsd)
+# compute_pval(clusterID, geneList, odd_ratio_marker, all_rmsd)

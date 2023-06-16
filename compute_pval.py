@@ -6,6 +6,7 @@ from scipy.stats import norm
 
 def compute_pval(cluster_id, gene_list, odd_ratio_marker, all_rmsd):
     percen_exp = odd_ratio_marker["Percentage expression"]
+    flattened_gene_list = [item[0][0] for item in gene_list]
 
     # Convert dataframes to numpy arrays for computations
     all_rmsd_np = all_rmsd.apply(pd.to_numeric, errors="coerce").fillna(0).values
@@ -42,13 +43,18 @@ def compute_pval(cluster_id, gene_list, odd_ratio_marker, all_rmsd):
             ]
         )
 
-        for i, gene in enumerate(gene_list):
-            writer.writerow([gene, percen_exp_np[i], *normalized_result[i], *p_val[i]])
+        for i, _ in enumerate(gene_list):
+            writer.writerow(
+                [
+                    flattened_gene_list[i],
+                    percen_exp_np[i],
+                    *normalized_result[i],
+                    *p_val[i],
+                ]
+            )
 
     # Write results into excel files
     for i in range(np.max(cluster_id)):
-        flattened_gene_list = [item[0][0] for item in gene_list]
-
         T = pd.DataFrame(
             {
                 "Gene": flattened_gene_list,
