@@ -2,12 +2,14 @@
 Main driver code for the project.
 """
 
+import pandas as pd
 from load_dataset import load_dataset
 
 # from process_data import identify_clusters, plot_clusters_and_expression
 # from draw_pgc import compute_rmsd
-from get_all_rmsd import get_all_rmsd
-from odd_ratio_marker import odd_ratio_marker
+# from get_all_rmsd import get_all_rmsd
+# from odd_ratio_marker import odd_ratio_marker
+from compute_pval import compute_pval
 
 coordinate = load_dataset("data/coordinate.mat")  # 2D spatial coordinate
 Expression = load_dataset("data/Expression.mat")  # gene expression
@@ -25,5 +27,9 @@ clusterID = load_dataset("data/clusterID.mat")  # cluster ID
 
 # print(RSMD)
 
-odd_ratio_marker(clusterID, Expression, geneList)
+# odd_ratio_marker(clusterID, Expression, geneList)
 # get_all_rmsd(coordinate, clusterID, Expression, geneList)
+odd_ratio_marker = pd.read_csv("data/odd_ratio_marker.csv")
+all_rmsd = pd.read_csv("data/all_rmsd.csv")
+
+compute_pval(clusterID, geneList, odd_ratio_marker, all_rmsd)

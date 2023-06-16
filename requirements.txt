@@ -5,6 +5,7 @@ joblib
 kiwisolver
 matplotlib
 numpy
+openpyxl
 packaging
 pandas
 Pillow
