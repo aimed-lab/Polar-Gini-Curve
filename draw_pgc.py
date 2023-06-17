@@ -16,9 +16,9 @@ def compute_gini(pop, val, makeplot=False):
     makeplot (bool, optional): Whether to plot the Lorenz curve. Default is False.
 
     Returns:
-    g (float): Gini coefficient.
-    l (ndarray): Lorenz curve.
-    a (ndarray): Coordinate points of the Lorenz curve.
+    gini (float): Gini coefficient.
+    lorenz (ndarray): Lorenz curve.
+    curve_points (ndarray): Coordinate points of the Lorenz curve.
     """
 
     assert len(pop) == len(val), "compute_gini expects two equally long vectors."
@@ -39,21 +39,21 @@ def compute_gini(pop, val, makeplot=False):
     ), "compute_gini expects nonnegative vectors."
 
     # process input
-    z = val * pop
-    ord = np.argsort(val)
-    pop = pop[ord]
-    z = z[ord]
+    weighted = val * pop
+    sorted_indices = np.argsort(val)
+    pop = pop[sorted_indices]
+    weighted = weighted[sorted_indices]
     pop = np.cumsum(pop)
-    z = np.cumsum(z)
+    weighted = np.cumsum(weighted)
     relpop = pop / pop[-1]
-    relz = z / z[-1]
+    relz = weighted / weighted[-1]
 
     # Gini coefficient
-    g = 1 - np.sum((relz[:-1] + relz[1:]) * np.diff(relpop))
+    gini = 1 - np.sum((relz[:-1] + relz[1:]) * np.diff(relpop))
 
     # Lorentz curve
-    l = np.column_stack([relpop, relz])
-    a = np.column_stack([pop, z])
+    lorenz = np.column_stack([relpop, relz])
+    curve_points = np.column_stack([pop, weighted])
 
     if makeplot:  # ... plot it?
         plt.fill_between(relpop, relz, color=[0.5, 0.5, 1.0])  # the Lorentz curve
@@ -63,12 +63,12 @@ def compute_gini(pop, val, makeplot=False):
         )  # ranges of abscissa and ordinate are by definition exactly [0,1]
         plt.axis("equal")  # both axes should be equally long
         plt.grid()
-        plt.title(f"Gini coefficient = {g}")
+        plt.title(f"Gini coefficient = {gini}")
         plt.xlabel("Share of population")
         plt.ylabel("Share of value")
         plt.show()
 
-    return g, l, a
+    return gini, lorenz, curve_points
 
 
 def make_2d_gini(x, cluster_id, cluster_name=None):
@@ -104,20 +104,12 @@ def make_2d_gini(x, cluster_id, cluster_name=None):
         coordinate = x[cluster_id == cluster]
         gini = np.zeros(len(angle_list))
 
-        for i in range(len(angle_list)):
-            angle = angle_list[i]
+        for i, angle in enumerate(angle_list):
             value = np.dot(coordinate, [np.cos(angle), np.sin(angle)])
             value -= np.min(value)
             gini[i] = compute_gini(np.ones(len(value)), value)[0]
 
         all_gini[cluster - 1] = gini
-
-        ## polar plot
-        # plt.polar(angle_list, gini)
-        # plt.title("Gini Coefficients")
-
-    # plt.legend(cluster_name)
-    # plt.show()
 
     return angle_list, all_gini
 
@@ -146,10 +138,6 @@ def compute_rmsd(
     ]  # get the spatial coordinate of cells in cluster
     cluster_lbl = np.ones(len(cluster_index))  # label these cells as '1'
 
-    # print(gene_list.shape)
-    # print(cluster_id.shape)
-    # print(expression.shape)
-
     marker_index = np.where(gene_list == marker)[0]
     marker_expression = expression[:, marker_index]
     gene_index = np.where((cluster_id == cluster) & (marker_expression > 0))[
@@ -165,14 +153,14 @@ def compute_rmsd(
     _, all_gini = make_2d_gini(
         np.vstack((gene_coor, cluster_coor)),
         np.hstack((gene_lbl, cluster_lbl)),
-        [f"{marker} cluster {cluster} cells", "All cluster {cluster} cells"],
+        [f"{marker} cluster {cluster} cells", f"All cluster {cluster} cells"],
     )
 
     try:
-        RMSD = np.sqrt(
+        rmsd = np.sqrt(
             np.mean(np.abs(all_gini[0] - all_gini[1]) ** 2)
         )  # the RMSD between two PGCs
     except:
-        RMSD = np.nan
+        rmsd = np.nan
 
-    return RMSD
+    return rmsd
