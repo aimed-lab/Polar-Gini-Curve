@@ -73,8 +73,8 @@ def draw_tsne(
     )
 
     # Labels and title
-    ax.get_xaxis().set_visible(False)
-    ax.get_yaxis().set_visible(False)
+    ax.set_xlabel("t-SNE 1")
+    ax.set_ylabel("t-SNE 2")
     ax.set_title(f"t-SNE for marker gene {marker_gene} in cluster {target_cluster_id}")
 
     # Save figure in png format
