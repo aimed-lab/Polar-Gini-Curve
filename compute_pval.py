@@ -44,24 +44,17 @@ def compute_pval(cluster_id, gene_list, odd_ratio_marker, all_rmsd):
         )
 
         for i, _ in enumerate(gene_list):
+            # Grouping array values into lists
+            raw_RSMD_list = list(all_rmsd_np[i])
+            normalized_RSMD_list = list(normalized_result[i])
+            p_val_list = list(p_val[i])
+
             writer.writerow(
                 [
                     flattened_gene_list[i],
                     percen_exp_np[i],
-                    *normalized_result[i],
-                    *p_val[i],
+                    raw_RSMD_list,
+                    normalized_RSMD_list,
+                    p_val_list,
                 ]
             )
-
-    # Write results into excel files
-    for i in range(np.max(cluster_id)):
-        T = pd.DataFrame(
-            {
-                "Gene": flattened_gene_list,
-                "percentage_cell_expressing": percen_exp_np,
-                "raw_RSMD": all_rmsd_np[:, i],
-                "normalized_RSMD": normalized_result[:, i],
-                "P_value": p_val[:, i],
-            }
-        )
-        T.to_excel(f"RSMD_cluster{i}.xlsx", index=False)
