@@ -140,8 +140,11 @@ def plot_gini(
     resolution = 1000
     angle_list = np.pi * np.linspace(0, 360, resolution) / 180
 
+    colors = ["red", "gray"]
+    alphas = [1, 0.25]
+
     # for each cluster, get the list of gini corresponding to each angle
-    for cluster in range(1, num_cluster + 1):
+    for idx, cluster in enumerate(range(1, num_cluster + 1)):
         coordinate = x[cluster_id == cluster]
         gini = np.zeros(len(angle_list))
 
@@ -150,8 +153,8 @@ def plot_gini(
             value -= np.min(value)
             gini[i] = compute_gini(np.ones(len(value)), value)[0]
 
-        # polar plot
-        plt.polar(angle_list, gini)
+        # Polar plot with specified color
+        plt.polar(angle_list, gini, color=colors[idx], alpha=alphas[idx])
         plt.title("Gini Coefficient")
 
     plt.legend(cluster_name)
