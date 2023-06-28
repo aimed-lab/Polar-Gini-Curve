@@ -163,4 +163,5 @@ def compute_rmsd(
     except:
         rmsd = np.nan
 
-    return rmsd
+    # Round to 2 precision points
+    return round(rmsd, 2)

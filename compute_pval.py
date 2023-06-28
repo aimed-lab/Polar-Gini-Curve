@@ -55,6 +55,7 @@ def compute_pval(cluster_id, gene_list, odd_ratio_marker, all_rmsd):
                     percen_exp_np[i],
                     raw_RSMD_list,
                     normalized_RSMD_list,
-                    p_val_list,
+                    # Round to 2 precision points
+                    round(p_val_list, 2),
                 ]
             )
