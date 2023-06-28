@@ -6,10 +6,10 @@ Main driver code for the project.
 # import numpy as np
 from load_dataset import load_dataset
 
-# # from process_data import identify_clusters, plot_clusters_and_expression
+# from process_data import identify_clusters, plot_clusters_and_expression
 # from draw_pgc import make_2d_gini
-# # from get_all_rmsd import get_all_rmsd
-# # from odd_ratio_marker import odd_ratio_marker
+# from get_all_rmsd import get_all_rmsd
+from odd_ratio_marker import odd_ratio_marker
 # from compute_pval import compute_pval
 # from graphing import draw_tsne, plot_gini
 
@@ -17,6 +17,12 @@ coordinate = load_dataset("data/coordinate.mat")  # 2D spatial coordinate
 Expression = load_dataset("data/Expression.mat")  # gene expression
 geneList = load_dataset("data/geneList.mat")  # gene symbol
 clusterID = load_dataset("data/clusterID.mat")  # cluster ID
+
+# coverage = calculate_coverage(Expression, clusterID, geneList, marker_gene="Actc1", target_cluster=3)
+# print("Coverage for Actc1 in cluster 3:", coverage)
+
+# coverage = calculate_coverage(Expression, clusterID, geneList, marker_gene="Actc1")
+# print("Coverage for Actc1 across all clusters:", coverage)
 
 # draw_tsne(
 #     "Actc1", coordinate, clusterID, 2, Expression, geneList, random_state=0
@@ -35,7 +41,7 @@ clusterID = load_dataset("data/clusterID.mat")  # cluster ID
 
 # print(RSMD)
 
-# odd_ratio_marker(clusterID, Expression, geneList)
+odd_ratio_marker(clusterID, Expression, geneList)
 # get_all_rmsd(coordinate, clusterID, Expression, geneList)
 # odd_ratio_marker = pd.read_csv("data/odd_ratio_marker.csv")
 # all_rmsd = pd.read_csv("data/all_rmsd.csv")
